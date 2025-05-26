@@ -4,7 +4,29 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 export const login = async (req: Request, res: Response) => {
-  // TODO: If the user exists and the password is correct, return a JWT token
+  const { username, password } = req.body;
+
+  try {
+    const user = await User.findOne({ where: { username } });
+
+    if (!user) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // User authenticated, create a token
+    const accessToken = jwt.sign({ username: user.username, id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' });
+
+    return res.json({ accessToken });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 
 const router = Router();
