@@ -15,7 +15,7 @@
     "build": "npm run client:build && npm run server:build",
     "server:build": "cd server && npm run build",
     "seed": "cd server && npm run seed",
-    "render-build": "npm install && npm run build"
+    "render-build": "npm install --ignore-scripts && cd server && rm -rf node_modules package-lock.json && npm install && cd ../client && rm -rf node_modules package-lock.json && npm install && cd .. && npm run build"
   },
   "keywords": [],
   "author": "",
